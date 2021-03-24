@@ -1,1 +1,98 @@
+package com.jbit.dao;//pack
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class BaseDao {
+
+  //Attribute
+  
+	private String driver = "com.jdbc.mysql.Driver";
+	private String url = "jdbc:mysql://localhost:3306/dbname";//DBname
+	private String user = "root";
+	private String pwd = "123.com";
+	private Connection conn;
+	private PreparedStatement pstmt;
+  
+	//Get connect
+  
+	public Connection getConnection() {
+		if (conn == null) {
+			try {
+				Class.forName(driver);
+				conn = DriverManager.getConnection(url, user, pwd);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return conn;
+	}
+  
+	//Close connect
+  
+	public void closeAll(Connection conn, Statement stmt, ResultSet rs) {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if (stmt != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if (rs != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+  
+	//update
+  
+	public int executeUpdate(String sql, Object...params) {
+		int rows = 0;
+		conn = getConnection();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			if (params != null) {
+				for (int i = 0; i < params.length; i++) {
+					pstmt.setObject(i + 1, params[i]);
+				}
+			} 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+  
+	//select
+  
+	public ResultSet executeQuery(String sql, Object...params) {
+		ResultSet rs = null;
+		conn = getConnection();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			if (params != null) {
+				for (int i = 0; i < params.length; i++) {
+					pstmt.setObject(i + 1, params[i]);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
+	}
+}
